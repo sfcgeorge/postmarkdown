@@ -41,6 +41,10 @@ class Post
     [slug]
   end
 
+  def persisted?
+    true
+  end
+
   def metadata
     load_content
     @metadata
@@ -104,7 +108,8 @@ class Post
     end
 
     def where(conditions = {})
-      conditions = conditions.symbolize_keys
+      conditions.permit! if conditions.class == ActionController::Parameters
+      conditions = conditions.to_h.symbolize_keys
       conditions.assert_valid_keys :year, :month, :day, :slug, :to_param, :visible
       [:year, :month, :day].each do |key|
         conditions[key] = conditions[key].to_i if conditions[key].present?
